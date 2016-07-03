@@ -12,7 +12,7 @@ public class StringItemTest {
         item.addFollower(new StringItem("foo"));
 
         Item<String> followingItem = item.getFollowingItem();
-        assertEquals("foo", followingItem.getItem());
+        assertEquals("foo", followingItem.get());
     }
 
 }

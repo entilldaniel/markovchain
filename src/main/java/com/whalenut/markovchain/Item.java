@@ -6,9 +6,8 @@ import java.util.TreeMap;
 
 
 /**
- * I'll begin with a dumb implementation that will
- * not be a real markov chain, instead i'll just randomly
- * select the next word.
+ * This is a representation of a item, it may be a {@link String} or any other reasonable type
+ * Internally this class will keep track of alternative following items.
  *
  * @param <T>
  */
@@ -16,7 +15,7 @@ public abstract class Item<T> {
 
     protected final T item;
     protected final Map<Item<T>, Integer> followers;
-    private Map<Integer, Item<T>> probabilities;
+    private Map<Long, Item<T>> probabilities;
     private int maxVal = 0;
     private static final Random rand = new Random();
 
@@ -25,9 +24,19 @@ public abstract class Item<T> {
         this.followers = followers;
     }
 
+    /**
+     * Add a reference to a following {@link Item} to this {@link Item}
+     *
+     * @param item the reference to a {@link Item}
+     */
     abstract public void addFollower(Item<T> item);
 
-    public T getItem() {
+    /**
+     * Retrieve the actual data from an item.
+     *
+     * @return T get the raw type from this item.
+     */
+    public T get() {
         return item;
     }
 
@@ -37,14 +46,19 @@ public abstract class Item<T> {
 
         double latest = 0;
         for (Map.Entry<Item<T>, Integer> entry : followers.entrySet()) {
-            double probability = base / entry.getValue().intValue();
-            //TODO: Change stuff to long instead.
-            probabilities.put(new Integer((int)Math.round(latest + probability)), entry.getKey());
+            double probability = base / entry.getValue();
+            probabilities.put(Math.round(latest + probability), entry.getKey());
             latest = latest + probability;
         }
         maxVal = (int) Math.round(latest);
     }
 
+    /**
+     * Based on probability and a java.util.Random
+     * this will calculate a following item when called.
+     *
+     * @return {@Item<T>} the following item.
+     */
     public Item<T> getFollowingItem() {
         if(probabilities == null) {
             calculateProbabilities();
@@ -52,8 +66,8 @@ public abstract class Item<T> {
 
         int keyValue = rand.nextInt(maxVal + 1);
 
-        Integer prev = -1;
-        for(Integer key : probabilities.keySet()) {
+        Long prev = -1L;
+        for(Long key : probabilities.keySet()) {
             if (keyValue <= key) {
                 return probabilities.get(key);
             }

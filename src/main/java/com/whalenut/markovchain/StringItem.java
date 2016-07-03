@@ -8,6 +8,7 @@ public class StringItem extends Item<String> {
         super(item, new HashMap<>());
     }
 
+    @Override
     public void addFollower(Item<String> item) {
         if(followers.containsKey(item)) {
             followers.put(item, followers.get(item) + 1);

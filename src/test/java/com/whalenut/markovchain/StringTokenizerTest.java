@@ -1,6 +1,5 @@
 package com.whalenut.markovchain;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.ByteArrayInputStream;
@@ -19,7 +18,17 @@ public class StringTokenizerTest {
         tokenizer.tokenize();
         String feed = tokenizer.getFeed(2);
 
-        assertEquals("hello world", feed);
+        /**
+         * since the starting point is random we can never know which word will start.
+         * but since it's only hello that may have a follower we know that it is either
+         * "hello world" or just "world"
+         */
+        String[] split = feed.split(" ");
+        if(split.length == 2) {
+            assertEquals("hello world", feed);
+        } else {
+            assertEquals("world", feed);
+        }
     }
 
     @Test
@@ -28,10 +37,8 @@ public class StringTokenizerTest {
         Tokenizer<String> tokenizer = new StringTokenizer(is);
         tokenizer.tokenize();
         String feed = tokenizer.getFeed(50);
+        System.out.println(feed);
         assertEquals(50, feed.split(" ").length);
     }
-
-
-
 
 }
